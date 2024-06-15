@@ -7,10 +7,14 @@ import java.util.Objects;
 public class Main {
     private ArrayList<PromoCode> promocodes = new ArrayList<PromoCode>();
     private ArrayList<Product> products = new ArrayList<Product>();
-    private ArrayList<Sale> Sales = new ArrayList<Sale>();
+    private ArrayList<Sale> sales = new ArrayList<Sale>();
 
     public void addPromocode(String name, Date expDate, float discount, int usesLeft, String currency){
         promocodes.add(new PromoCode(name, expDate, discount, usesLeft, currency));
+    }
+
+    public void addPromocode(PromoCode promoCode){
+        promocodes.add(promoCode);
     }
 
     public PromoCode getPromocode(String name){
@@ -26,12 +30,6 @@ public class Main {
         return thePromocode;
     }
 
-    public void applyCode(PromoCode pc, Product pd, Sale s){
-        if (Objects.equals(pc.getCurrency(), pd.getCurrency())){
-
-        }
-    }
-
     public ArrayList<PromoCode> getPromocodes() {
         return promocodes;
     }
@@ -40,7 +38,13 @@ public class Main {
         return products;
     }
 
-    public ArrayList<Sale> getSales() {
-        return Sales;
+    public void addSale(Sale sale){
+        sales.add(sale);
     }
+
+    public ArrayList<Sale> getSales() {
+        return sales;
+    }
+
+
 }

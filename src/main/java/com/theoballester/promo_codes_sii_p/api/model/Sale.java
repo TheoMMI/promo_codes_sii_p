@@ -1,16 +1,26 @@
 package com.theoballester.promo_codes_sii_p.api.model;
 
-public class Sale {
-    String currency;
-    float totalAmnt;
-    float totalDscnt;
-    int nbPurchases;
+import java.util.ArrayList;
+import java.util.Objects;
 
-    public Sale(String currency, float totalAmnt, float totalDscnt, int nbPurchases) {
+public class Sale {
+    private String currency;
+    private float totalAmnt;
+    private float totalDscnt;
+    private ArrayList<Product> products = new ArrayList<Product>();
+    private PromoCode promoCode;
+
+    public Sale(String currency, Product product) {
         this.currency = currency;
-        this.totalAmnt = totalAmnt;
-        this.totalDscnt = totalDscnt;
-        this.nbPurchases = nbPurchases;
+        this.totalAmnt = product.getPrice();
+        products.add(product);
+    }
+    public Sale(String currency, ArrayList<Product> products) {
+        this.currency = currency;
+        for(Product p: products){
+            this.totalAmnt += p.getPrice();
+        }
+        this.products.addAll(products);
     }
 
     public String getCurrency() {
@@ -33,16 +43,31 @@ public class Sale {
         return totalDscnt;
     }
 
-    public void setTotalDscnt(float totalDscnt) {
-        this.totalDscnt = totalDscnt;
+    public void setTotalDscnt() {
+        totalDscnt = promoCode.getDiscount();
     }
 
-    public int getNbPurchases() {
-        return nbPurchases;
+    public ArrayList<Product> getProducts() {
+        return products;
     }
 
-    public void setNbPurchases(int nbPurchases) {
-        this.nbPurchases = nbPurchases;
+    public void addProduct(Product product) {
+        this.products.add(product);
+    }
+
+    public PromoCode getPromoCode() {
+        return promoCode;
+    }
+
+    public void setPromoCode(PromoCode promoCode) {
+        this.promoCode = promoCode;
+    }
+
+    public void get(){
+        if (Objects.isNull(promoCode)){
+            throw new NullPointerException("there is no promo code to apply");
+        }
+
     }
 
     @Override
@@ -51,7 +76,6 @@ public class Sale {
                 "currency='" + currency + '\'' +
                 ", totalAmnt=" + totalAmnt +
                 ", totalDscnt=" + totalDscnt +
-                ", nbPurchases=" + nbPurchases +
                 '}';
     }
 }
