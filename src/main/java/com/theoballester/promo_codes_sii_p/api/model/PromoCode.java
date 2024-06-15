@@ -3,30 +3,32 @@ package com.theoballester.promo_codes_sii_p.api.model;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 public class PromoCode {
     private String name;
-    private Date expDate;
+    private LocalDate expDate;
     private float discount;
     private int usesLeft;
     private String currency;
 
-    public PromoCode(String name, Date expDate, float discount, int usesLeft, String currency) {
+    public PromoCode(String name, LocalDate expDate, float discount, int usesLeft, String currency) {
         try {
             setName(name);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         this.expDate = expDate;
-        this.discount = discount;
-        this.usesLeft = usesLeft;
-        this.currency = currency;
+        this.setDiscount(discount);
+        this.setUsesLeft(usesLeft);
+        this.setCurrency(currency);
     }
 
     public void use(){
         if (usesLeft>0) {
-            usesLeft-=1;
+            usesLeft--;
         }
     }
 
@@ -42,16 +44,20 @@ public class PromoCode {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Promo code name is too short (<3 characters)");
         }
         else{
-            this.name = name;
+            this.name = name.toUpperCase();
         }
     }
 
-    public Date getExpDate() {
+    public LocalDate getExpDate() {
         return expDate;
     }
 
-    public void setExpDate(Date expDate) {
+    public void setExpDate(LocalDate expDate) {
         this.expDate = expDate;
+    }
+    public void setExpDate(int d,int m,int y) {
+
+        this.expDate = LocalDate.of(y,m,d);
     }
 
     public int getUsesLeft() {
@@ -69,11 +75,27 @@ public class PromoCode {
 
     public float getDiscount() {
         usesCheck();
-        return discount;
+        if (expDate.isAfter(LocalDate.now())) {
+            return discount;
+        }
+        else{
+            return 0.0f;
+        }
     }
 
     public void setDiscount(float discount) {
-        this.discount = discount;
+        if (discount>=0.0f) {
+            if (discount<=100.0f) {
+                this.discount = discount;
+                System.out.println(discount);
+            }
+            else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Discount cannot be over a 100%");
+            }
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Discount cannot be negative");
+        }
     }
 
     public String getCurrency() {
@@ -81,7 +103,7 @@ public class PromoCode {
     }
 
     public void setCurrency(String currency) {
-        this.currency = currency;
+        this.currency = currency.toUpperCase();
     }
 
     @Override

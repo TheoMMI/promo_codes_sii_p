@@ -3,7 +3,10 @@ package com.theoballester.promo_codes_sii_p.api.model;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Time;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 public class Sale {
@@ -13,26 +16,26 @@ public class Sale {
     private float totalDscnt;
     private ArrayList<Product> products = new ArrayList<Product>();
     private PromoCode promoCode;
-    private boolean notSold = true;
+    private boolean notSold;
 
     public Sale(String currency, Product product) {
-
+        this.notSold = true;
         this.currency = currency;
         this.totalAmnt = product.getPrice();
         products.add(product);
     }
 
     public Sale(String currency, Product product, PromoCode promoCode) {
-
+        this.notSold = true;
         this.currency = currency;
-        this.promoCode = promoCode;
+        setPromoCode(promoCode);
         this.totalAmnt = product.getPrice();
         calcTotalAmnt();
         products.add(product);
     }
 
     public Sale(String currency, ArrayList<Product> products) {
-
+        this.notSold = true;
         this.currency = currency;
         for(Product p: products){
             this.totalAmnt += p.getPrice();
@@ -81,9 +84,7 @@ public class Sale {
     }
 
     public void setPromoCode(PromoCode promoCode){
-        if(notSold){
-            this.promoCode = promoCode;
-        }
+        this.promoCode = promoCode;
     }
 
     public void calcTotalAmnt(){
