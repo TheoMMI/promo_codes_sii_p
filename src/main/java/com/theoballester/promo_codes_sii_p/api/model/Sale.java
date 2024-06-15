@@ -1,4 +1,4 @@
-package com.theoballester.promo_codes_sii_p.service;
+package com.theoballester.promo_codes_sii_p.api.model;
 
 public class Sale {
     String currency;
