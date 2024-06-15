@@ -1,9 +1,13 @@
 package com.theoballester.promo_codes_sii_p.api.model;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Sale {
+
     private String currency;
     private float totalAmnt;
     private float totalDscnt;
@@ -12,11 +16,23 @@ public class Sale {
     private boolean notSold = true;
 
     public Sale(String currency, Product product) {
+
         this.currency = currency;
         this.totalAmnt = product.getPrice();
         products.add(product);
     }
+
+    public Sale(String currency, Product product, PromoCode promoCode) {
+
+        this.currency = currency;
+        this.promoCode = promoCode;
+        this.totalAmnt = product.getPrice();
+        calcTotalAmnt();
+        products.add(product);
+    }
+
     public Sale(String currency, ArrayList<Product> products) {
+
         this.currency = currency;
         for(Product p: products){
             this.totalAmnt += p.getPrice();
@@ -33,6 +49,7 @@ public class Sale {
     }
 
     public float getTotalAmnt() {
+        calcTotalAmnt();
         return totalAmnt;
     }
 
@@ -41,6 +58,7 @@ public class Sale {
     }
 
     public float getTotalDscnt() {
+        calcTotalAmnt();
         return totalDscnt;
     }
 
@@ -69,16 +87,15 @@ public class Sale {
     }
 
     public void calcTotalAmnt(){
-        if (Objects.isNull(promoCode)){
-            throw new NullPointerException("there is no promo code to apply");
-        }
         float price = 0.0f;
         for(Product p: products){
             price+=p.getPrice();
         }
         totalAmnt = price;
-        price *= (100.0f - promoCode.getDiscount());
-        price /= 100.0f;
+        if (Objects.nonNull(promoCode)){
+            price *= (100.0f - promoCode.getDiscount());
+            price /= 100.0f;
+        }
         totalDscnt = price;
     }
 
@@ -94,5 +111,10 @@ public class Sale {
                 ", totalAmnt=" + totalAmnt +
                 ", totalDscnt=" + totalDscnt +
                 '}';
+    }
+
+    public void sold(){
+        notSold = false;
+        promoCode.use();
     }
 }
