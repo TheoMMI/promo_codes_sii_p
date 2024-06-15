@@ -9,6 +9,7 @@ public class Sale {
     private float totalDscnt;
     private ArrayList<Product> products = new ArrayList<Product>();
     private PromoCode promoCode;
+    private boolean notSold = true;
 
     public Sale(String currency, Product product) {
         this.currency = currency;
@@ -28,7 +29,7 @@ public class Sale {
     }
 
     public void setCurrency(String currency) {
-        this.currency = currency;
+        if(notSold) {this.currency = currency;}
     }
 
     public float getTotalAmnt() {
@@ -36,15 +37,15 @@ public class Sale {
     }
 
     public void setTotalAmnt(float totalAmnt) {
-        this.totalAmnt = totalAmnt;
+        if(notSold) {this.totalAmnt = totalAmnt;}
     }
 
     public float getTotalDscnt() {
         return totalDscnt;
     }
 
-    public void setTotalDscnt() {
-        totalDscnt = promoCode.getDiscount();
+    public void setTotalDscnt(float totalDscnt) {
+        if(notSold) {this.totalDscnt = totalDscnt;}
     }
 
     public ArrayList<Product> getProducts() {
@@ -52,22 +53,38 @@ public class Sale {
     }
 
     public void addProduct(Product product) {
-        this.products.add(product);
+        if(notSold) {
+            this.products.add(product);
+        }
     }
 
     public PromoCode getPromoCode() {
         return promoCode;
     }
 
-    public void setPromoCode(PromoCode promoCode) {
-        this.promoCode = promoCode;
+    public void setPromoCode(PromoCode promoCode){
+        if(notSold){
+            this.promoCode = promoCode;
+        }
     }
 
-    public void get(){
+    public void calcTotalAmnt(){
         if (Objects.isNull(promoCode)){
             throw new NullPointerException("there is no promo code to apply");
         }
+        float price = 0.0f;
+        for(Product p: products){
+            price+=p.getPrice();
+        }
+        totalAmnt = price;
+        price *= (100.0f - promoCode.getDiscount());
+        price /= 100.0f;
+        totalDscnt = price;
+    }
 
+    public float getTotalPrice(){
+        calcTotalAmnt();
+        return totalDscnt;
     }
 
     @Override

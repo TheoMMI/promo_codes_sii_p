@@ -1,8 +1,6 @@
 package com.theoballester.promo_codes_sii_p.api.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 public class Main {
     private ArrayList<PromoCode> promocodes = new ArrayList<PromoCode>();
@@ -36,6 +34,18 @@ public class Main {
 
     public ArrayList<Product> getProducts() {
         return products;
+    }
+
+    public void addProduct(String name, Float price, String currency){
+        products.add(new Product(name, price, currency));
+    }
+    public void addProduct(Product product){
+        products.add(product);
+    }
+    public void getProduct(String name){
+        for(Product p: products){
+
+        }
     }
 
     public void addSale(Sale sale){
